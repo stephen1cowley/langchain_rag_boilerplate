@@ -7,7 +7,9 @@ from langgraph.checkpoint.sqlite import SqliteSaver
 from langgraph.prebuilt import create_react_agent
 from langchain_core.messages import AIMessage, HumanMessage
 import bs4
+import dotenv
 
+dotenv.load_dotenv()
 
 memory = SqliteSaver.from_conn_string(":memory:")
 llm = ChatOpenAI(model="gpt-3.5-turbo", temperature=0)
@@ -38,6 +40,17 @@ tool = create_retriever_tool(
 )
 tools = [tool]
 
+system_message = "You are a helpful assistant."
 
-agent_executor = create_react_agent(llm, tools, checkpointer=memory)
+agent_executor = create_react_agent(llm, tools, checkpointer=memory, messages_modifier=system_message)
 
+
+### Make the query ###
+query = "What can an AI agent do?"
+config = {"configurable": {"thread_id": "abc123"}}
+
+for s in agent_executor.stream(
+    {"messages": [HumanMessage(content=query)]}, config=config
+):
+    print(s)
+    print("----")
