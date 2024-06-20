@@ -40,17 +40,18 @@ tool = create_retriever_tool(
 )
 tools = [tool]
 
-system_message = "You are a helpful assistant."
 
+system_message = "You are a helpful assistant with access to a tool."
 agent_executor = create_react_agent(llm, tools, checkpointer=memory, messages_modifier=system_message)
 
 
 ### Make the query ###
-query = "What can an AI agent do?"
-config = {"configurable": {"thread_id": "abc123"}}
+# query = "What does the potentiality of AI agents depend on?"
+query = "What's the weather like today?"
+config = {"configurable": {"thread_id": "abc124"}}
 
 for s in agent_executor.stream(
-    {"messages": [HumanMessage(content=query)]}, config=config
+    {"messages": [HumanMessage(content=query)]}, stream_mode="updates", config=config
 ):
     print(s)
     print("----")
