@@ -7,10 +7,11 @@ import bs4
 
 ### Construct retriever ###
 loader = WebBaseLoader(
-    web_paths=("https://lilianweng.github.io/posts/2023-06-23-agent/",),
+    web_paths=(["https://www.bailii.org/ew/cases/EWHC/Admin/2023/55.html",
+                "https://www.bailii.org/ew/cases/EWHC/Admin/2023/45.html"]),
     bs_kwargs=dict(
         parse_only=bs4.SoupStrainer(
-            class_=("post-content", "post-title", "post-header")
+            True,
         )
     ),
 )
@@ -19,3 +20,5 @@ docs = loader.load()
 text_splitter = RecursiveCharacterTextSplitter(chunk_size=1000, chunk_overlap=200)
 splits = text_splitter.split_documents(docs)
 vectorstore = Chroma.from_documents(documents=splits, embedding=OpenAIEmbeddings(), persist_directory="./chroma_db")
+
+print(vectorstore)
